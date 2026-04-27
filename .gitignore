@@ -1,0 +1,15 @@
+# Build outputs
+build/
+.gradle/
+
+# Output plugin package
+*.isp
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local config
+local.properties

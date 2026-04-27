@@ -1,0 +1,2 @@
+Hello from pluginAssets/greeting.txt!
+This file is packaged into the .isp under assets/ and loaded via PluginResourceService.readAsset("greeting.txt").

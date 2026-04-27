@@ -1,0 +1,24 @@
+[versions]
+agp                 = "8.12.0"
+android-compileSdk  = "36"
+android-minSdk      = "24"
+kotlin              = "2.3.21"
+composeMultiplatform = "1.10.3"
+componentsResources  = "1.10.3"
+runtime             = "1.10.3"
+foundation          = "1.10.3"
+material3           = "1.9.0"
+ui                  = "1.10.3"
+
+[libraries]
+components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "componentsResources" }
+runtime              = { module = "org.jetbrains.compose.runtime:runtime",                 version.ref = "runtime"             }
+foundation           = { module = "org.jetbrains.compose.foundation:foundation",           version.ref = "foundation"          }
+material3            = { module = "org.jetbrains.compose.material3:material3",             version.ref = "material3"           }
+ui                   = { module = "org.jetbrains.compose.ui:ui",                           version.ref = "ui"                  }
+
+[plugins]
+androidLibrary      = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp"                  }
+kotlinMultiplatform  = { id = "org.jetbrains.kotlin.multiplatform",      version.ref = "kotlin"               }
+composeMultiplatform = { id = "org.jetbrains.compose",                   version.ref = "composeMultiplatform" }
+composeCompiler      = { id = "org.jetbrains.kotlin.plugin.compose",     version.ref = "kotlin"               }
