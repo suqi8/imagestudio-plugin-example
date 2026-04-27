@@ -1,6 +1,7 @@
 # Build outputs
 build/
 .gradle/
+.kotlin/
 
 # Output plugin package
 *.isp
@@ -13,3 +14,6 @@ build/
 
 # Local config
 local.properties
+
+# OS files
+.DS_Store

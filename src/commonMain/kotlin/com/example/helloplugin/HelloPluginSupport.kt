@@ -198,6 +198,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
     val taskRunningStep1 = stringResource(Res.string.task_running_step_1)
     val taskRunningStep2 = stringResource(Res.string.task_running_step_2)
     val taskRunningStep3 = stringResource(Res.string.task_running_step_3)
+    val taskIdleStatus = stringResource(Res.string.task_idle_status)
     val taskDoneStatus = stringResource(Res.string.task_submitted_detail)
     val taskSubmittedMsg = stringResource(Res.string.task_submitted_snackbar)
     val taskPermissionNeeded = stringResource(Res.string.task_permission_needed)
@@ -218,7 +219,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
     }
     var projectContent by remember(projectContentEmpty) { mutableStateOf(projectContentEmpty) }
     var projectFiles by remember { mutableStateOf(emptyList<String>()) }
-    var taskStatus by remember { mutableStateOf(stringResource(Res.string.task_idle_status)) }
+    var taskStatus by remember(taskIdleStatus) { mutableStateOf(taskIdleStatus) }
     var refreshTick by remember { mutableIntStateOf(0) }
 
     fun refreshPermissionStates() {
@@ -410,7 +411,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 label = { Text(stringResource(Res.string.settings_note_label)) }
             )
             if (settingsStatus.isNotBlank()) {
-                StatusSurface(settingsStatus)
+                StatusSurface(value = settingsStatus)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -529,7 +530,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 secondaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            apiExtrasStatus = stringResource(Res.string.project_empty)
+                            apiExtrasStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.read")) {
@@ -621,7 +622,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 primaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            projectStatus = stringResource(Res.string.project_empty)
+                            projectStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.write")) {
@@ -646,7 +647,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 secondaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            projectStatus = stringResource(Res.string.project_empty)
+                            projectStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.write")) {
@@ -680,7 +681,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 secondaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            projectStatus = stringResource(Res.string.project_empty)
+                            projectStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.write")) {
@@ -703,7 +704,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 primaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            projectStatus = stringResource(Res.string.project_empty)
+                            projectStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.write")) {
@@ -729,7 +730,7 @@ private fun HelloPluginDemoContent(context: PluginUiContext) {
                 secondaryAction = {
                     scope.launch {
                         if (currentProject == null) {
-                            projectStatus = stringResource(Res.string.project_empty)
+                            projectStatus = projectEmptyText
                             return@launch
                         }
                         if (!ensurePermission("project.write")) {

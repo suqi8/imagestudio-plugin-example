@@ -29,7 +29,6 @@ class HelloPlugin : ImageStudioPlugin {
     }
 
     override fun onUnload() {
-        println("[HelloPlugin] onUnload")
     }
 
     @Composable

@@ -1,110 +1,167 @@
-# HelloPlugin — ImageStudio 原生插件示例
+# HelloPlugin — ImageStudio Native Plugin Example
 
-这是一个演示 ImageStudio 原生插件（`.isp` 格式）完整用法的示例项目。
+`plugin-example` 是一个可独立构建的 ImageStudio 原生插件示例工程。
 
-## 目录结构
+它演示了当前插件系统中最常用的一组能力：
 
-```
+- 插件生命周期
+- Compose UI 挂载
+- 宿主题色适配
+- 插件私有设置读写
+- 项目文件读写与二进制文件 API
+- 资源读取
+- Shell 调用
+- 后台任务与权限申请
+
+构建产物为 ImageStudio 可直接安装的 `.isp` 插件包。
+
+## 项目结构
+
+```text
 plugin-example/
-├── plugin.toml                    # 插件清单（宿主读取此文件识别插件）
-└── src/main/kotlin/com/example/helloplugin/
-    ├── HelloPlugin.kt             # customPage=false：在宿主 Dialog 内展示 UI
-    └── HelloPluginPage.kt         # customPage=true ：宿主打开全屏页面
+├── plugin.toml
+├── build.gradle.kts
+├── README.md
+├── gradle/
+└── src/
+    └── commonMain/
+        ├── kotlin/com/example/helloplugin/
+        │   ├── HelloPlugin.kt
+        │   ├── HelloPluginPage.kt
+        │   ├── HelloPluginSupport.kt
+        │   └── PluginDemoTheme.kt
+        ├── composeResources/
+        └── pluginAssets/
 ```
 
-## 插件清单字段速查
+## 当前示例覆盖的能力
+
+| 能力 | 说明 |
+| --- | --- |
+| 生命周期 | `onLoad` / `onEnable` / `onDisable` / `Content` |
+| UI 挂载 | 通过 `PluginUiContext` 渲染插件界面 |
+| 主题适配 | 跟随宿主亮暗色和主色 |
+| 插件设置 | `PluginSettings` 的字符串、布尔、整数、长整型、浮点、键枚举能力 |
+| 项目访问 | 文本文件读写、目录创建、删除、权限调整 |
+| 二进制文件 API | `exists` / `readBytes` / `writeBytes` |
+| 插件资源 | `readAsset` / `readTextAsset` |
+| Shell | 通过宿主执行跨平台命令 |
+| 后台任务 | `runTask` / `PluginTaskService` |
+| 权限 | 运行时申请与宿主侧权限校验 |
+
+## 清单文件说明
+
+插件元数据定义在根目录的 `plugin.toml` 中。
+
+当前示例使用的关键字段：
 
 | 字段 | 说明 |
-|------|------|
-| `[plugin] id` | 唯一标识符，反向域名格式 |
-| `[plugin] version` | SemVer 版本号（`major.minor.patch`） |
-| `[runtime] mainClass` | 实现 `ImageStudioPlugin` 的全限定类名 |
-| `[runtime] android` / `desktop` | 各平台的 JAR 相对路径 |
-| `[ui] customPage` | `false` = Dialog 容器；`true` = 全屏页面容器 |
-| `[permissions] declared` | 插件可能使用的全部权限 |
-| `[permissions] requiredForRun` | 缺少则无法运行的权限 |
-| `[permissions] defaultEnabled` | 安装时默认开启的权限 |
+| --- | --- |
+| `[plugin].id` | 插件唯一 ID |
+| `[plugin].entryClass` | 插件入口类 |
+| `[plugin].supportedPlatforms` | 支持的平台列表 |
+| `[plugin].customPage` | 是否使用全页 UI |
+| `[runtime].desktopJar` | Desktop 运行时产物路径 |
+| `[runtime].androidDexJar` | Android dex-in-jar 产物路径 |
+| `[permissions].declared` | 声明的权限列表 |
+| `[permissions].defaultEnabled` | 默认开启的权限 |
 
-## 构建步骤
+## 构建要求
 
-### 1. 添加宿主 API 依赖
+- JDK 21
+- Gradle Wrapper（仓库已提供）
+- Android SDK
+- Android build-tools（用于 `d8`）
 
-在插件的 `build.gradle.kts` 中添加 ImageStudio Plugin API 依赖：
+优先通过以下方式提供 Android SDK 路径：
 
-```kotlin
-// 暂时通过本地 jar 引入（待 API 模块发布到 Maven 后替换）
-dependencies {
-    compileOnly(files("path/to/imagestudio-plugin-api.jar"))
-    // Compose Multiplatform（与宿主版本保持一致）
-    implementation(compose.runtime)
-    implementation(compose.foundation)
-    implementation(compose.ui)
-}
-```
+- `ANDROID_HOME`
+- `ANDROID_SDK_ROOT`
+- `local.properties` 中的 `sdk.dir`
 
-### 2. 编译 JAR
+## 构建命令
+
+在 `plugin-example` 目录下执行：
 
 ```bash
-# Desktop（普通 JVM jar）
-./gradlew :plugin-example:jvmJar
+# 编译整个示例工程
+./gradlew build
 
-# Android（dex-in-jar，需 Android SDK + D8）
-./gradlew :plugin-example:assembleRelease
-# 输出：build/outputs/aar/plugin-example-release.aar
-# 提取其中的 classes.jar 并重命名为 helloplugin-android.jar
+# 生成 Desktop JAR
+./gradlew jvmJar
+
+# 生成 Android classes JAR
+./gradlew androidClassesJar
+
+# 生成 Android dex-in-jar
+./gradlew androidDexJar
+
+# 打包最终 .isp
+./gradlew packageIsp
 ```
 
-### 3. 打包 .isp
+Windows PowerShell 下可使用：
 
-`.isp` 是一个标准 ZIP 文件，扩展名改为 `.isp`：
-
-```
-helloplugin.isp  (ZIP)
-├── plugin.toml
-└── libs/
-    ├── helloplugin-android.jar
-    └── helloplugin-desktop.jar
+```powershell
+.\gradlew.bat build
+.\gradlew.bat packageIsp
 ```
 
-```bash
-# 打包命令（在 plugin-example/ 目录下）
-zip -r ../helloplugin.isp plugin.toml libs/
-# 或使用 Python
-python -c "
-import zipfile, os
-with zipfile.ZipFile('../helloplugin.isp', 'w', zipfile.ZIP_DEFLATED) as z:
-    z.write('plugin.toml')
-    for f in os.listdir('libs'):
-        z.write(f'libs/{f}')
-"
+## 输出产物
+
+主要输出位置如下：
+
+```text
+build/
+├── isp/
+│   └── helloplugin-1.0.0.isp
+└── plugin/
+    └── android/
+        ├── helloplugin-android-classes.jar
+        └── helloplugin-android.jar
 ```
 
-### 4. 安装
+`packageIsp` 会自动将以下内容打包进 `.isp`：
 
-将 `helloplugin.isp` 传输到设备，在 ImageStudio 插件列表页面点击「安装」并选择该文件。
+- `plugin.toml`
+- `libs/helloplugin-desktop.jar`
+- `libs/helloplugin-android.jar`
+- `assets/` 下的插件资源
 
-## 权限说明
+## 安装与验证
 
-| 权限名 | 说明 |
-|--------|------|
-| `SHELL` | 执行系统 Shell 命令 |
-| `STORAGE_READ` | 读取存储（项目文件等） |
-| `STORAGE_WRITE` | 写入存储 |
-| `NETWORK` | 访问网络 |
+将构建出的 `.isp` 导入 ImageStudio 后，可以重点验证以下内容：
 
-## 生命周期
+- 插件能否正常显示页面
+- 主题是否跟随宿主变化
+- `project.read` / `project.write` 权限开关是否生效
+- Shell 调用是否按权限受控
+- 后台任务是否能正常提交到宿主任务面板
+- 文本/二进制项目文件 API 是否正常工作
 
-```
-宿主启动 → onCreate()
-用户启用 → onEnable()
-用户点击运行 → Content() [Compose UI]
-用户禁用 → onDisable()
-插件卸载/宿主退出 → onDestroy()
-```
+## 权限列表
 
-## 注意事项
+当前示例声明了这些权限：
 
-- 插件代码在宿主的 ClassLoader 下运行，可直接使用宿主已有的 Compose/Kotlin 运行时
-- 不要在插件中初始化全局单例（Koin、反射缓存等），避免与宿主冲突
-- 耗时操作必须放在 `runTask` / 协程中，**禁止阻塞主线程**
-- 崩溃超过 3 次后宿主会自动禁用此插件，请妥善处理异常
+| 权限 | 用途 |
+| --- | --- |
+| `project.read` | 读取当前项目文件 |
+| `project.write` | 写入当前项目文件 |
+| `shell.execute` | 执行宿主 Shell 命令 |
+| `task.background` | 提交后台任务 |
+
+## 开发说明
+
+- `plugin-api` 的接口源码随示例一同放在 `src/commonMain/kotlin/com/suqi8/imagestudio/plugin/api/`，用于独立构建示例工程。
+- 运行时真正由宿主提供这些 API 实现，因此打包时会从最终 JAR 中排除宿主 API 类。
+- Compose 运行时相关依赖在示例工程中按宿主提供模式使用，避免重复打包核心运行时。
+
+## 发布前建议
+
+- 确认 `plugin.toml` 中的 `version`、`author`、`description` 已更新为你准备公开发布的内容。
+- 运行一次 `./gradlew build packageIsp`，确认最终 `.isp` 可生成。
+- 如需作为公开仓库发布，建议补充 LICENSE、变更日志和插件截图。
+
+## License
+
+此目录当前未附带单独 License 文件；如果你准备公开发布到 GitHub，建议在发布前补充对应许可证。
