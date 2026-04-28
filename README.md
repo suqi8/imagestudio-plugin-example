@@ -41,23 +41,23 @@ plugin-example/
 
 ## 当前示例覆盖的能力
 
-| 能力 | 说明 |
-| --- | --- |
-| 生命周期 | `onLoad` / `onEnable` / `onDisable` / `Content` |
-| UI 挂载 | 通过 `PluginUiContext` 渲染插件界面 |
-| 主题适配 | 跟随宿主亮暗色和主色 |
-| 插件设置 | `PluginSettings` 的字符串、布尔、整数、长整型、浮点、键枚举能力 |
-| 插件存储 | `PluginStorageService` 的 data/cache/tmp 文件访问 |
-| 项目访问 | 文本文件读写、目录创建、删除、权限调整 |
-| 二进制文件 API | `exists` / `readBytes` / `writeBytes` |
-| 用户文件系统 | `PluginFileService` 的受权限控制文件访问 |
-| HTTP 网络 | `PluginNetworkService` 请求、文本和二进制响应 |
-| 剪贴板 | `PluginClipboardService` 文本读写 |
-| 宿主能力 | `PluginHostService` 的设置读取/写入、导航和 URL 打开 |
-| 插件资源 | `readAsset` / `readTextAsset` |
-| Shell | 通过宿主执行跨平台命令 |
-| 后台任务 | `runTask` / `PluginTaskService` |
-| 权限 | 运行时申请与宿主侧权限校验 |
+| 能力        | 说明                                              |
+|-----------|-------------------------------------------------|
+| 生命周期      | `onLoad` / `onEnable` / `onDisable` / `Content` |
+| UI 挂载     | 通过 `PluginUiContext` 渲染插件界面                     |
+| 主题适配      | 跟随宿主亮暗色和主色                                      |
+| 插件设置      | `PluginSettings` 的字符串、布尔、整数、长整型、浮点、键枚举能力        |
+| 插件存储      | `PluginStorageService` 的 data/cache/tmp 文件访问    |
+| 项目访问      | 文本文件读写、目录创建、删除、权限调整                             |
+| 二进制文件 API | `exists` / `readBytes` / `writeBytes`           |
+| 用户文件系统    | `PluginFileService` 的受权限控制文件访问                  |
+| HTTP 网络   | `PluginNetworkService` 请求、文本和二进制响应              |
+| 剪贴板       | `PluginClipboardService` 文本读写                   |
+| 宿主能力      | `PluginHostService` 的设置读取/写入、导航和 URL 打开         |
+| 插件资源      | `readAsset` / `readTextAsset`                   |
+| Shell     | 通过宿主执行跨平台命令，支持等待结果和实时输出回调                       |
+| 后台任务      | `runTask` / `PluginTaskService`                 |
+| 权限        | 运行时申请与宿主侧权限校验                                   |
 
 ## 清单文件说明
 

@@ -95,6 +95,14 @@ interface PluginPermissionService {
 interface PluginShellService {
     /** 执行命令并等待结果 */
     suspend fun execute(command: List<String>, workingDir: String? = null): PluginShellResult
+
+    /** 流式执行命令，实时回调 stdout/stderr 每行输出，并在结束后返回汇总结果 */
+    suspend fun executeStream(
+        command: List<String>,
+        workingDir: String? = null,
+        onOutput: (String) -> Unit,
+        onError: (String) -> Unit
+    ): PluginShellResult
     /** 获取宿主工具目录（包含 apktool、smali 等工具） */
     fun getBinDir(): String
     /** 获取指定工具的完整路径 */
