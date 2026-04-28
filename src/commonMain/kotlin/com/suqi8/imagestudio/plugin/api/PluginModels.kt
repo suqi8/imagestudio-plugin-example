@@ -1,5 +1,7 @@
 package com.suqi8.imagestudio.plugin.api
 
+import java.util.Collections.emptyMap
+
 
 /** 插件支持的运行平台 */
 enum class PluginPlatform {
@@ -54,6 +56,25 @@ enum class TaskState {
  * - [Page]   ：插件占据完整页面，可自定义 Scaffold/TopBar（customPage = true）
  */
 enum class WindowMode { Dialog, Page }
+
+
+/** 插件私有存储区域。 */
+enum class PluginStorageArea { Data, Cache, Tmp }
+
+
+/** 插件可请求宿主导航到的页面。 */
+enum class HostNavigationTarget {
+    Main,
+    Workshop,
+    Workbench,
+    PluginList,
+    NativePluginPage,
+    Settings,
+    About,
+    Update,
+    Contributors,
+    OpenSourceLicenses
+}
 
 
 /** 插件 UI 会话结束的原因 */
@@ -119,4 +140,26 @@ data class PluginShellResult(
     val stderr: String
 ) {
     val isSuccess: Boolean get() = exitCode == 0
+}
+
+
+/** 插件 HTTP 请求描述。 */
+data class PluginHttpRequest(
+    val url: String,
+    val method: String = "GET",
+    val headers: Map<String, String> = emptyMap(),
+    val body: ByteArray? = null,
+    val contentType: String? = null
+)
+
+
+/** 插件 HTTP 响应快照。 */
+data class PluginHttpResponse(
+    val code: Int,
+    val message: String,
+    val headers: Map<String, List<String>>,
+    val body: ByteArray
+) {
+    val isSuccessful: Boolean get() = code in 200..299
+    fun bodyText(): String = body.decodeToString()
 }

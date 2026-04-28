@@ -8,7 +8,12 @@
 - Compose UI 挂载
 - 宿主题色适配
 - 插件私有设置读写
+- 插件私有存储
 - 项目文件读写与二进制文件 API
+- 用户文件系统访问 API
+- HTTP 网络 API
+- 剪贴板 API
+- 宿主设置与导航 API
 - 资源读取
 - Shell 调用
 - 后台任务与权限申请
@@ -42,8 +47,13 @@ plugin-example/
 | UI 挂载 | 通过 `PluginUiContext` 渲染插件界面 |
 | 主题适配 | 跟随宿主亮暗色和主色 |
 | 插件设置 | `PluginSettings` 的字符串、布尔、整数、长整型、浮点、键枚举能力 |
+| 插件存储 | `PluginStorageService` 的 data/cache/tmp 文件访问 |
 | 项目访问 | 文本文件读写、目录创建、删除、权限调整 |
 | 二进制文件 API | `exists` / `readBytes` / `writeBytes` |
+| 用户文件系统 | `PluginFileService` 的受权限控制文件访问 |
+| HTTP 网络 | `PluginNetworkService` 请求、文本和二进制响应 |
+| 剪贴板 | `PluginClipboardService` 文本读写 |
+| 宿主能力 | `PluginHostService` 的设置读取/写入、导航和 URL 打开 |
 | 插件资源 | `readAsset` / `readTextAsset` |
 | Shell | 通过宿主执行跨平台命令 |
 | 后台任务 | `runTask` / `PluginTaskService` |
@@ -134,10 +144,10 @@ build/
 
 - 插件能否正常显示页面
 - 主题是否跟随宿主变化
-- `project.read` / `project.write` 权限开关是否生效
+- `project.read` / `project.write` / `project.output.write` 权限开关是否生效
 - Shell 调用是否按权限受控
 - 后台任务是否能正常提交到宿主任务面板
-- 文本/二进制项目文件 API 是否正常工作
+- 文本/二进制项目文件、插件存储、资源读取等 API 是否正常工作
 
 ## 权限列表
 
@@ -147,12 +157,22 @@ build/
 | --- | --- |
 | `project.read` | 读取当前项目文件 |
 | `project.write` | 写入当前项目文件 |
+| `project.output.write` | 写入项目输出目录 |
+| `plugin.storage` | 读写插件 data/cache/tmp 私有存储 |
+| `file.read` | 读取用户文件系统路径 |
+| `file.write` | 写入用户文件系统路径 |
+| `network.http` | 发起 HTTP 请求 |
+| `clipboard.read` | 读取剪贴板文本 |
+| `clipboard.write` | 写入剪贴板文本 |
+| `settings.read` | 读取宿主公开设置键 |
+| `settings.write` | 写入宿主公开设置键 |
+| `host.navigation` | 打开 URL 或请求宿主导航 |
 | `shell.execute` | 执行宿主 Shell 命令 |
 | `task.background` | 提交后台任务 |
 
 ## 开发说明
 
-- `plugin-api` 的接口源码随示例一同放在 `src/commonMain/kotlin/com/suqi8/imagestudio/plugin/api/`，用于独立构建示例工程。
+- `plugin-api` 的接口源码随示例一同放在 `src/commonMain/kotlin/com/suqi8/imagestudio/plugin/api/`，用于独立构建示例工程；正式发布 Maven 包后可替换为 Maven 依赖。
 - 运行时真正由宿主提供这些 API 实现，因此打包时会从最终 JAR 中排除宿主 API 类。
 - Compose 运行时相关依赖在示例工程中按宿主提供模式使用，避免重复打包核心运行时。
 

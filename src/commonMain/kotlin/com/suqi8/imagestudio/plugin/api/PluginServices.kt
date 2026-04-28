@@ -1,5 +1,7 @@
 package com.suqi8.imagestudio.plugin.api
 
+import java.util.Collections.emptyMap
+
 
 /**
  * 插件各目录的绝对路径。宿主负责在插件加载前创建所有目录。
@@ -48,6 +50,19 @@ interface PluginSettings {
     fun remove(key: String)
     /** 清空插件所有配置 */
     fun clear()
+}
+
+
+/** 宿主公开设置访问服务。需要 `settings.read` / `settings.write` 权限。 */
+interface PluginHostSettingsService {
+    fun getString(key: String, default: String = ""): String
+    fun putString(key: String, value: String)
+    fun getBoolean(key: String, default: Boolean = false): Boolean
+    fun putBoolean(key: String, value: Boolean)
+    fun getInt(key: String, default: Int = 0): Int
+    fun putInt(key: String, value: Int)
+    fun getFloat(key: String, default: Float = 0f): Float
+    fun putFloat(key: String, value: Float)
 }
 
 
@@ -170,6 +185,92 @@ interface PluginProjectService {
         ownerOnly: Boolean = false,
         storageDir: Boolean = false
     ): Boolean
+}
+
+
+/** 插件私有存储服务。需要 `plugin.storage` 权限。 */
+interface PluginStorageService {
+    fun listFiles(
+        relativeDir: String = "",
+        area: PluginStorageArea = PluginStorageArea.Data,
+        recursive: Boolean = false
+    ): List<String>
+
+    fun exists(
+        relativePath: String,
+        area: PluginStorageArea = PluginStorageArea.Data
+    ): Boolean
+
+    fun readText(
+        relativePath: String,
+        area: PluginStorageArea = PluginStorageArea.Data
+    ): String?
+
+    fun readBytes(
+        relativePath: String,
+        area: PluginStorageArea = PluginStorageArea.Data
+    ): ByteArray?
+
+    fun writeText(
+        relativePath: String,
+        content: String,
+        append: Boolean = false,
+        area: PluginStorageArea = PluginStorageArea.Data
+    )
+
+    fun writeBytes(
+        relativePath: String,
+        content: ByteArray,
+        append: Boolean = false,
+        area: PluginStorageArea = PluginStorageArea.Data
+    )
+
+    fun createDirectory(
+        relativePath: String,
+        area: PluginStorageArea = PluginStorageArea.Data
+    )
+
+    fun delete(
+        relativePath: String,
+        area: PluginStorageArea = PluginStorageArea.Data,
+        recursive: Boolean = false
+    ): Boolean
+}
+
+
+/** 用户文件系统访问服务。需要 `file.read` / `file.write` 权限。 */
+interface PluginFileService {
+    fun exists(path: String): Boolean
+    fun listFiles(path: String, recursive: Boolean = false): List<String>
+    fun readText(path: String, charsetName: String = "UTF-8"): String?
+    fun readBytes(path: String): ByteArray?
+    fun writeText(path: String, content: String, append: Boolean = false, charsetName: String = "UTF-8")
+    fun writeBytes(path: String, content: ByteArray, append: Boolean = false)
+    fun createDirectory(path: String)
+    fun delete(path: String, recursive: Boolean = false): Boolean
+}
+
+
+/** HTTP 网络服务。需要 `network.http` 权限。 */
+interface PluginNetworkService {
+    suspend fun request(request: PluginHttpRequest): PluginHttpResponse
+    suspend fun getText(url: String, headers: Map<String, String> = emptyMap()): String
+    suspend fun getBytes(url: String, headers: Map<String, String> = emptyMap()): ByteArray
+}
+
+
+/** 剪贴板文本服务。需要 `clipboard.read` / `clipboard.write` 权限。 */
+interface PluginClipboardService {
+    fun readText(): String?
+    fun writeText(text: String)
+}
+
+
+/** 宿主通用能力服务。导航和 URL 打开需要 `host.navigation` 权限。 */
+interface PluginHostService {
+    val settings: PluginHostSettingsService
+    fun navigate(target: HostNavigationTarget, projectName: String = "", pluginId: String = "")
+    fun openUrl(url: String)
 }
 
 

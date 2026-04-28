@@ -46,9 +46,9 @@ androidDexJar = "libs/helloplugin-android.jar"
 # declared      : 插件可能用到的全部权限
 # requiredForRun: 缺少时插件无法运行（宿主运行前检查）
 # defaultEnabled: 安装时默认开启的权限（用户可在设置里关闭）
-declared = ["shell.execute", "project.read", "project.write", "task.background"]
+declared = ["shell.execute", "project.read", "project.write", "project.output.write", "plugin.storage", "file.read", "file.write", "network.http", "clipboard.read", "clipboard.write", "settings.read", "settings.write", "host.navigation", "task.background"]
 requiredForRun = []
-defaultEnabled = ["project.read", "project.write"]
+defaultEnabled = ["project.read", "project.write", "plugin.storage", "clipboard.write"]
 
 [build]
 minify = false

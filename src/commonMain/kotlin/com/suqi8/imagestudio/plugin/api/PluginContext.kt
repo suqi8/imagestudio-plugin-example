@@ -23,10 +23,20 @@ interface PluginContext {
     val settings: PluginSettings
     /** 项目访问服务 */
     val projects: PluginProjectService
+    /** 插件自身 data/cache/tmp 存储服务 */
+    val storage: PluginStorageService
+    /** 用户文件系统访问服务 */
+    val files: PluginFileService
     /** Shell 执行服务 */
     val shell: PluginShellService
+    /** HTTP 网络请求服务 */
+    val network: PluginNetworkService
     /** 后台任务服务 */
     val tasks: PluginTaskService
     /** 静态资源读取服务 */
     val resources: PluginResourceService
+    /** 剪贴板服务 */
+    val clipboard: PluginClipboardService
+    /** 宿主设置、导航等通用能力 */
+    val host: PluginHostService
 }
